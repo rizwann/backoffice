@@ -13,5 +13,5 @@ export default function Dashboard() {
     }
   }, [isOpen, onOpen]);
 
-  return <div className="p-4">Root page</div>;
+  return null;
 }
