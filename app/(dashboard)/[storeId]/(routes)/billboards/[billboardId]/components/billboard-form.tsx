@@ -69,9 +69,17 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
   const onSubmit = async (values: BillboardFormValues) => {
     try {
       setLoading(true);
-      await axios.patch(`/api/stores/${params.storeId}`, values);
+      if (initialData) {
+        await axios.patch(
+          `/api/${params.storeId}/billboards/${params.billboardId}`,
+          values
+        );
+      } else {
+        await axios.post(`/api/${params.storeId}/billboards`, values);
+      }
       router.refresh();
-      toast.success("Store updated successfully");
+      router.push(`/${params.storeId}/billboards`);
+      toast.success(toastMessage);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
@@ -82,12 +90,16 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/stores/${params.storeId}`);
+      await axios.delete(
+        `/api/${params.storeId}/billboards/${params.billboardId}`
+      );
       router.refresh();
       router.push("/");
-      toast.success("Store deleted successfully");
+      toast.success("Billboards deleted successfully");
     } catch (error) {
-      toast.error("You have to remove all categories and products first");
+      toast.error(
+        "You have to remove all categories first using this billboard"
+      );
     } finally {
       setLoading(false);
       setOpen(false);
@@ -110,7 +122,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
             size="sm"
             onClick={() => setOpen(true)}
           >
-            <Trash className="h-4 w-4" />
+            <Trash className="w-4 h-4" />
           </Button>
         )}
       </div>
@@ -118,7 +130,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full"
+          className="w-full space-y-8"
         >
           <FormField
             control={form.control}
@@ -138,7 +150,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
               </FormItem>
             )}
           />
-          <div className="grid grid-cold-3 gap-8">
+          <div className="grid gap-8 grid-cold-3">
             <FormField
               control={form.control}
               name="label"
