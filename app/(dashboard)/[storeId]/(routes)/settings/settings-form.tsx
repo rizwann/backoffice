@@ -91,16 +91,16 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
           size="sm"
           onClick={() => setOpen(true)}
         >
-          <Trash className="h-4 w-4" />
+          <Trash className="w-4 h-4" />
         </Button>
       </div>
       <Separator />
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full"
+          className="w-full space-y-8"
         >
-          <div className="grid grid-cold-3 gap-8">
+          <div className="gap-8 md:grid md:grid-cols-3">
             <FormField
               control={form.control}
               name="name"

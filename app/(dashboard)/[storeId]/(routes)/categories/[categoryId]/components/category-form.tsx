@@ -136,7 +136,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-8"
         >
-          <div className="grid gap-8 grid-cold-3">
+          <div className="gap-8 md:grid md:grid-cols-3">
             <FormField
               control={form.control}
               name="name"
