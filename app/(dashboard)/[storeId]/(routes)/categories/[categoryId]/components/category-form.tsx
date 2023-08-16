@@ -12,9 +12,16 @@ import {
 } from "@/components/ui/form";
 import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Category } from "@prisma/client";
+import { Billboard, Category } from "@prisma/client";
 import axios from "axios";
 import { Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -32,9 +39,13 @@ type CategoryFormValues = z.infer<typeof formSchema>;
 
 interface CategoryFormProps {
   initialData: Category | null;
+  billboards: Billboard[];
 }
 
-export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
+export const CategoryForm: React.FC<CategoryFormProps> = ({
+  initialData,
+  billboards,
+}) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -66,14 +77,14 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
       setLoading(true);
       if (initialData) {
         await axios.patch(
-          `/api/${params.storeId}/billboards/${params.billboardId}`,
+          `/api/${params.storeId}/categories/${params.categoryId}`,
           values
         );
       } else {
-        await axios.post(`/api/${params.storeId}/billboards`, values);
+        await axios.post(`/api/${params.storeId}/categories`, values);
       }
       router.refresh();
-      router.push(`/${params.storeId}/billboards`);
+      router.push(`/${params.storeId}/categories`);
       toast.success(toastMessage);
     } catch (error) {
       toast.error("Something went wrong");
@@ -86,15 +97,13 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
     try {
       setLoading(true);
       await axios.delete(
-        `/api/${params.storeId}/billboards/${params.billboardId}`
+        `/api/${params.storeId}/categories/${params.categoryId}`
       );
       router.refresh();
-      router.push(`/${params.storeId}/billboards`);
-      toast.success("Billboards deleted successfully");
+      router.push(`/${params.storeId}/categories`);
+      toast.success("Category deleted successfully");
     } catch (error) {
-      toast.error(
-        "You have to remove all categories first using this billboard"
-      );
+      toast.error("You have to remove all products first using this category");
     } finally {
       setLoading(false);
       setOpen(false);
@@ -141,6 +150,39 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="billboardId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Billboard</FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a billboard"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {billboards.map((billboard) => (
+                        <SelectItem key={billboard.id} value={billboard.id}>
+                          {billboard.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
